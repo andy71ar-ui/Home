@@ -1,0 +1,12 @@
+{
+  "name": "finanzas-hogar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sistema hogareno portable para ingresos, gastos, cuentas, tarjetas, prestamos y vencimientos.",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
