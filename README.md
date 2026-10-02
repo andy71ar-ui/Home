@@ -5,7 +5,7 @@ Esta carpeta contiene una copia local del sitio `control-hogar-andrea.andy71ar.c
 ## Iniciar
 
 Doble clic en:
-
+ 
 ```text
 iniciar-control-hogar.bat
 ```
