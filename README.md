@@ -47,7 +47,7 @@ El respaldo queda cifrado con la contraseña que uses en la app.
 - Vencimientos.
 - Préstamos.
 - Lectura de documentos PDF con PDF.js local.
-- Rubros de gastos y lugares/servicios.
+- Rubros de gastos e ingresos, y lugares/servicios.
 - Cambio de contraseña.
 - Respaldo cifrado.
 - Uso offline mediante service worker.
