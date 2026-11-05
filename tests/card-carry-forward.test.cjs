@@ -37,14 +37,19 @@ function application(data = fixture()) {
   });
   vm.runInContext(source + `
     render=()=>{}; toast=()=>{};
-    let lastModal=null;
+    let lastModal=null,formHandler=null;
     modal=(title,body)=>{lastModal={title,body}};
+    submit=handler=>{formHandler=handler};
     globalThis.app={
       load(data,month='2026-09'){state=normalizeState(data);selectedMonth=month},
+      setMonth(month){selectedMonth=month},
       get state(){return state},
       dueForCard, dueItems, dueIsPending, dueStatus, dueBadge,
       renderCards, renderHome, renderDues, toggleStatementCarryForward,
       get lastModal(){return lastModal},
+      async clickClosing(cardId){wire();const button={dataset:{cardClosing:cardId}};
+        await $('#view').onclick({target:{closest:()=>button}})},
+      async saveForm(data){await formHandler(data);await save()},
       async clickCarriedStatements(){wire();const button={dataset:{viewCarriedStatements:'1'}};
         await $('#view').onclick({target:{closest:()=>button}})},
       setSave(fn){save=fn},
@@ -213,4 +218,52 @@ test('carry history explains when no summaries are marked and removes undone ent
   await app.toggleStatementCarryForward('previous');
   await app.clickCarriedStatements();
   assert.match(app.lastModal.body, /Todavía no marcaste ningún resumen/);
+});
+
+test('closing dates can be edited and cleared for one month without changing other months or financial records', async () => {
+  const data = fixture();
+  data.cards[0].closingDay = '25';
+  data.cards[0].closingDates = { '2026-09': '2026-09-24', '2026-10': '2026-10-25' };
+  const { app, saved } = application(data);
+  const transactions = JSON.stringify(app.state.transactions), statements = JSON.stringify(app.state.statements);
+  assert.match(app.renderCards(), /Cierre del resumen de septiembre de 2026/);
+  assert.match(app.renderCards(), /24\/09\/2026/);
+  assert.doesNotMatch(app.renderCards(), /25\/10\/2026/);
+  await app.clickClosing('visa');
+  assert.match(app.lastModal.body, /name="closingDate" value="2026-09-24"/);
+  await app.saveForm({ closingDate: '2026-09-23' });
+  assert.equal(app.state.cards[0].closingDates['2026-09'], '2026-09-23');
+  assert.equal(app.state.cards[0].closingDates['2026-10'], '2026-10-25');
+  // The form keeps the month it was opened for, even if the selected month changes.
+  await app.clickClosing('visa');
+  app.setMonth('2026-10');
+  await app.saveForm({ closingDate: '' });
+  assert.equal(app.state.cards[0].closingDates['2026-09'], undefined);
+  assert.equal(app.state.cards[0].closingDates['2026-10'], '2026-10-25');
+  assert.match(app.renderCards(), /25\/10\/2026/);
+  assert.equal(app.state.cards[0].closingDay, '25');
+  assert.equal(JSON.stringify(app.state.transactions), transactions);
+  assert.equal(JSON.stringify(app.state.statements), statements);
+  assert.equal(saved.length, 2);
+});
+
+test('closing dates work before a statement is received and survive encrypted backups and cloud serialization', async () => {
+  const data = fixture();
+  data.statements = [];
+  const { app } = application(data);
+  app.load(app.state, '2026-10');
+  assert.match(app.renderCards(), /Cargar cierre/);
+  await app.clickClosing('visa');
+  // A summary can close in the preceding calendar month.
+  await app.saveForm({ closingDate: '2026-09-30' });
+  assert.match(app.renderCards(), /30\/09\/2026/);
+  assert.match(app.renderCards(), /Editar cierre/);
+  assert.equal(app.state.statements.length, 0);
+  assert.equal(JSON.parse(app.snapshot().cards.visa).closingDates['2026-10'], '2026-09-30');
+  const restored = await app.backupRoundTrip();
+  app.load(restored, '2026-10');
+  assert.match(app.renderCards(), /30\/09\/2026/);
+  app.load(app.state, '2026-11');
+  assert.doesNotMatch(app.renderCards(), /30\/09\/2026/);
+  assert.match(app.renderCards(), /Cargar cierre/);
 });
