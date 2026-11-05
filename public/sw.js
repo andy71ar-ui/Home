@@ -1,6 +1,6 @@
 // Cache only application files. Personal data stays encrypted in this browser's storage.
-const CACHE = 'hogar-app-v40';
-const APP_FILES = ['./', './index.html', './styles.css?v=2026-11-05-monthly-services', './app.js?v=2026-11-05-monthly-services', './icon.svg', './vendor/pdf.min.mjs', './vendor/pdf.worker.min.mjs'];
+const CACHE = 'hogar-app-v41';
+const APP_FILES = ['./', './index.html', './styles.css?v=2026-11-05-services-no-home-alert', './app.js?v=2026-11-05-services-no-home-alert', './icon.svg', './vendor/pdf.min.mjs', './vendor/pdf.worker.min.mjs'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(APP_FILES)).then(() => self.skipWaiting()));

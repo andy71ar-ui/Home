@@ -8,7 +8,7 @@ El sitio de uso habitual es https://control-hogar-andy71ar.web.app/, publicado e
 - Se reconocen gastos vinculados y facturas pagadas del período. Si hay una factura pendiente con importe conocido, un gasto parcial no confirma por sí solo el pago completo.
 - **Marcar pagado** confirma únicamente el control de ese mes, sin crear un gasto ni cambiar saldos. La marca se guarda en Firebase y en los respaldos, por lugar y mes.
 - **Registrar gasto** permite elegir **Mes que estás pagando** para asociar un pago atrasado al período correcto, conservando su fecha real en Movimientos.
-- El selector de mes y los botones de mes anterior/siguiente permiten consultar el historial. En Resumen se avisa qué cantidad de lugares sigue sin confirmación de pago.
+- El selector de mes y los botones de mes anterior/siguiente permiten consultar el historial.
 
 ## Dólares
 

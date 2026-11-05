@@ -24,7 +24,7 @@ function application(data = fixture()) {
       load(data,month='2026-11'){state=normalizeState(data);selectedMonth=month},
       get state(){return state},setMonth(m){selectedMonth=m},
       status:payeeMonthStatus,setPaid:setPayeeMonthPaid,
-      table:renderPayeeMonths,reminder:payeeMonthReminder,
+      table:renderPayeeMonths,
       setFilter(value){payeeStatusFilter=value},
       setSave(fn){save=fn},snapshot(){return cloudSnapshot(state)},
       balance(){return accountBalanceThrough(state.accounts[0])},
@@ -52,8 +52,6 @@ test('every saved place appears every month, including those with no invoice or 
   assert.match(html, /service-paid">Pagado/);
   assert.match(html, /service-unpaid">No pagado/);
   assert.match(html, /Sin vencimiento cargado/);
-  assert.match(app.reminder(), /sin pago registrado/);
-  assert.match(app.reminder(), /Ver control mensual/);
 });
 
 test('past expenses and paid bills are recognized only in their own month', () => {
